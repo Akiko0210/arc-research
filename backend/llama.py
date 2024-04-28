@@ -18,7 +18,7 @@ CORS(app)
 client = ApifyClient("apify_api_5UDWZrnbBgtcZTiwwDG61jpTri9WTk45i1Zb")
 
 # Configure GenerativeAI API
-genai.configure(api_key="AIzaSyD9FA8hc3p0AtaECPvjCxUdT6RCBMx8y4g")
+genai.configure(api_key="AIzaSyBv8PHJZfTNeYeSjRejaX0Jsxam-Kn2if8")
 
 # Set up the model
 generation_config = {
@@ -131,7 +131,7 @@ def chat():
                     links.append(document_link)
 
             # Output the valid links to a file
-            with open('/data/links.txt', 'w') as f:
+            with open('links.txt', 'w') as f:
                 for link in links:
                     f.write("%s\n" % link)
 
@@ -140,8 +140,6 @@ def chat():
         # Return model's response
         return jsonify({"response": response})
     
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)
