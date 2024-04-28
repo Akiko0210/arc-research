@@ -1,5 +1,14 @@
 from flask import Flask, request, jsonify, render_template
 import google.generativeai as genai
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+import glob
+import time
+
+import shutil
+
+import os
 from flask_cors import CORS
 from apify_client import ApifyClient
 import os.path
@@ -17,8 +26,13 @@ CORS(app)
 # Initialize the ApifyClient with your API token
 client = ApifyClient("apify_api_5UDWZrnbBgtcZTiwwDG61jpTri9WTk45i1Zb")
 
+chrome_options = Options()
+chrome_options.add_argument("--headless")
+
+driver = webdriver.Chrome(options=chrome_options)
+
 # Configure GenerativeAI API
-genai.configure(api_key="AIzaSyBv8PHJZfTNeYeSjRejaX0Jsxam-Kn2if8")
+genai.configure(api_key="AIzaSyD2Ivwpf_Dsboq7nQfSyh1seVMdDkVNWP4")
 
 # Set up the model
 generation_config = {
@@ -38,6 +52,8 @@ safety_settings = [
 model = genai.GenerativeModel(
     model_name="gemini-1.5-pro-latest", generation_config=generation_config, safety_settings=safety_settings
 )
+
+links = []
 
 # check if storage already exists
 PERSIST_DIR = "./storage"
@@ -122,6 +138,7 @@ def chat():
             run = client.actor("kdjLO0hegCjr5Ejqp").call(run_input=run_input)
             links = []
 
+
             # Fetch and append valid links from Actor results to the 'links' list
             for item in client.dataset(run["defaultDatasetId"]).iterate_items():
                 # Extract documentLink
@@ -131,15 +148,111 @@ def chat():
                     links.append(document_link)
 
             # Output the valid links to a file
-            with open('links.txt', 'w') as f:
-                for link in links:
-                    f.write("%s\n" % link)
+            
+            scrape_websites(links)
 
             return jsonify({"message": "Search completed. Check your results!"})
 
         # Return model's response
         return jsonify({"response": response})
-    
 
+def scrape_websites(links):
+    # Create the data folder if it doesn't exist
+    data_folder = 'data'
+    if not os.path.exists(data_folder):
+        os.makedirs(data_folder)
+    os.chdir(data_folder)
+    
+    # Initialize the WebDriver with the configured options
+    driver = webdriver.Chrome(options=chrome_options)
+
+    # Iterate over each link
+    for link in links:
+        # Remove newline characters
+        link = link.strip()
+        print("Scraping:", link)
+
+        # Open the webpage
+        driver.get(link)
+
+        # Wait for the PDF to download
+        time.sleep(1)  # Adjust the sleep time as needed
+
+    # Quit the WebDriver session
+    driver.quit()
+    # shutil.move("*.pdf", "data")
+    
+    # data_directory = 'data'
+
+# Ensure the data directory exists
+    # if not os.path.exists(data_directory):
+    #     os.makedirs(data_directory)
+
+    # # Create the wildcard pattern to match PDF files
+    # pdf_pattern = os.path.join(source_directory, '*.pdf')
+
+    # # Get a list of PDF files matching the pattern
+    # pdf_files = glob.glob(pdf_pattern)
+    # print(pdf_files, "pdf_files")
+
+    # # Move each PDF file to the data directory
+    # for pdf_file in pdf_files:
+    #     # Extract the filename from the full path
+    #     file_name = os.path.basename(pdf_file)
+        
+    #     # Create the destination path in the data directory
+    #     destination_path = os.path.join(data_directory, file_name)
+        
+    #     # Move the PDF file to the data directory
+    #     shutil.move(pdf_file, destination_path)
+    #     print(f"Moved {file_name} to {destination_path}")
+
+        # Get the content type from the response headers
+        # content_type = driver.execute_script("""
+        #     var mimeTypes = window.navigator.mimeTypes;
+        #     if (mimeTypes && mimeTypes.length > 0) {
+        #         return mimeTypes[0].type;
+        #     } else {
+        #         return null;
+        #     }
+        # """)
+        # print("content_type",content_type)
+
+        # Check if the content type is a PDF
+        # if content_type and 'pdf' in content_type.lower():
+        #     # Extract the filename from the URL
+        #     file_name = link.split('/')[-1]
+        #     print("this is an pdf file: ", file_name)
+
+        #     # Download the PDF file into the data folder
+        #     pdf_path = os.path.join(data_folder, file_name)
+        #     print(pdf_path,"pdf_path")
+        #     with open(pdf_path, 'wb') as pdf_file:
+        #         pdf_file.write(driver.find_element(By.TAG_NAME, 'body').screenshot_as_png)
+        #     print("PDF file downloaded:", pdf_path)
+        # else:
+            # # Find all <p> and <h2> elements
+            # p_elements = driver.find_elements(By.TAG_NAME, 'p')
+            # h2_elements = driver.find_elements(By.TAG_NAME, 'h2')
+
+            # # Write the extracted text to a file in the data folder
+            # file_path = os.path.join(data_folder, f'{link.split("/")[-1].replace(".", "_")}_extracted_text.txt')
+            # if os.path.exists(file_path):
+            #     with open(file_path, 'w') as file:
+            #         file.write("")
+
+            # # Append the text of each element
+            # with open(file_path, 'w', encoding='utf-8') as file:
+            #     # Write the text from each <p> element to the file
+            #     for p in p_elements:
+            #         file.write(p.text + '\n')
+
+            #     # Write the text from each <h2> element to the file
+            #     for h2 in h2_elements:
+            #         file.write(h2.text + '\n')
+
+            # print("Text extracted from", link, "and saved to:", file_path)
+            # pass
+                
 if __name__ == '__main__':
     app.run(debug=True)
