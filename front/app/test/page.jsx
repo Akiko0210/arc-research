@@ -2,6 +2,7 @@
 import React, { useEffect, useRef } from "react";
 import p5 from "p5";
 import { motion } from 'framer-motion';
+import { ExpandingCircle } from '../test/components/Layout2';
 
 const MatterJsComponent = () => {
   const canvasRef = useRef(null);
@@ -131,6 +132,8 @@ const MatterJsComponent = () => {
       p.mouseReleased = () => {
         if (selectedObject && offset && !mouseMovedDuringDrag) {
           console.log("Clicked but not dragged on a circle:", objects.indexOf(selectedObject)); // Log the index of the clicked circle
+
+
         } else {
           // Check if dragged object is inside trash bin
           if (
