@@ -5,7 +5,7 @@ import Layout from '../components/Layout';
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const data = [
   {
@@ -18,31 +18,38 @@ const data = [
     title: "Second Title", 
     content: "Second Content"
   },
+  ,
+  {
+    id: 3,
+    title: "third Title", 
+    content: "Second Content"
+  },
+  ,
+  {
+    id: 4,
+    title: "fourth Title", 
+    content: "Second Content"
+  },
   // Add more items as needed
 ];
 
 const Page = () => {
-  const [id, setId] = useState(1);
-  const [direction, setDirection] = useState(1); // 1 for right, -1 for left
+  const [activeId, setActiveId] = useState(1);
+  // const [activeIndex, setActiceIndex] = useState(0);
 
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "ArrowLeft") {
-        setId(id === 1 ? data.length : id - 1);
-        setDirection(-1);
-      } else if (e.key === "ArrowRight") {
-        setId(id === data.length ? 1 : id + 1);
-        setDirection(1);
+  const handleNavigation = (direction) => {
+    setActiveId(prevId => {
+      if(activeId >= data.length-2 && direction === 1) {  //stupid logic to prevent going to the last item
+        return activeId;;
+      } else
+      if(activeId <= 1 && direction === -1) {  //stupid logic to prevent going to the first item
+        return activeId;
       }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [id]);
-
-  const { title, content } = data.find(item => item.id === id);
+      const newIndex = prevId + direction;
+      
+      return newIndex > data.length ? 1 : newIndex < 1 ? data.length : newIndex;
+    });
+  };
 
   return (
     <Layout>
@@ -53,38 +60,37 @@ const Page = () => {
         transition={{ duration: 0.5 }}
         className="h-screen relative"
       >
-        {/* Left navigation button */}
-        <div className="absolute left-20 top-1/2 transform -translate-y-1/2">
-          <FontAwesomeIcon icon={faAngleLeft} className="h-[30px] w-[30px] cursor-pointer" />
+        {/* Navigation buttons */}
+        <div className="absolute left-20 top-1/2 transform -translate-y-1/2 z-10">
+          <FontAwesomeIcon icon={faAngleLeft} className="h-[30px] w-[30px] cursor-pointer" onClick={() => handleNavigation(-1)} />
         </div>
-        {/* Right navigation button */}
-        <div className="absolute right-20 top-1/2 transform -translate-y-1/2">
-          <FontAwesomeIcon icon={faAngleRight} className="h-[30px] w-[30px] cursor-pointer" />
+        <div className="absolute right-20 top-1/2 transform -translate-y-1/2 z-10">
+          <FontAwesomeIcon icon={faAngleRight} className="h-[30px] w-[30px] cursor-pointer" onClick={() => handleNavigation(1)} />
         </div>
-        {/* DONE button */}
-        <button className="absolute top-10 right-10 px-4 py-2 rounded-lg backdrop-blur-lg text-white focus:outline-none transition duration-300 hover:bg-red-600 border border-black">X</button>
         {/* Background Image */}
-        <div className="absolute inset-0 z-[-1]">
-          <Image src="/anime.avif" alt="Anime Background" layout="fill" objectFit="cover" />
-        </div>
-        <div className="flex items-center justify-center min-h-screen">
-          <motion.div
-            key={id} // This is crucial for animating between different content
-            className="relative w-[800px]"
-            initial={{ x: `${300 * direction}%` }}
-            animate={{ x: '0%', opacity: 1 }}
-            exit={{ x: `${-300 * direction}%` }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="rounded-xl p-4 bg-gray-800 bg-opacity-30 backdrop-blur-lg mb-4 text-center text-4xl">
-              {/* Title content */}
-              {title}
-            </div>
-            <div className="rounded-xl p-4 bg-gray-800 bg-opacity-30 backdrop-blur-lg">
-              {/* Content */}
-              {content}
-            </div>
-          </motion.div>
+        <Image src="/anime.avif" alt="Anime Background" layout="fill" objectFit="cover" className="z-[-1]" />
+        
+        <div className='flex relative w-screen h-screen'>
+          <div className='flex relative w-screen h-screen -translate-y-[10%] -translate-x-[27%]'>
+          {data.map((item) => (
+            <motion.div
+              key={item.id}
+              style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}
+              className="absolute w-[800px] top-1/2 left-1/2 -translate-x-[-50%] -translate-y-[-50%]"
+              initial={{ x: item.id === activeId ? 0 : 1300 * -(activeId - item.id) }}
+              animate={{ x: item.id === activeId ? 0 : 1300 * -(activeId - item.id) }}
+              exit={{ x: 800 * (activeId - item.id) }}
+              transition={{ type: "tween", duration: 0.5, ease: "easeInOut" }}
+            >
+              <div className="rounded-xl p-4 bg-gray-800 bg-opacity-30 backdrop-blur-lg mb-4 text-center text-4xl">
+                {item.title}
+              </div>
+              <div className="rounded-xl p-4 bg-gray-800 bg-opacity-30 backdrop-blur-lg">
+                {item.content}
+              </div>
+            </motion.div>
+          ))}
+          </div>
         </div>
       </motion.div>
     </Layout>
