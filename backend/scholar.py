@@ -5,7 +5,7 @@ client = ApifyClient("apify_api_5UDWZrnbBgtcZTiwwDG61jpTri9WTk45i1Zb")
 
 # Prepare the Actor input
 run_input = {
-    "keyword": "what's retina projection?",
+    "keyword": "Explore the significance of ultraviolet vision for insects, including its role in foraging, communication, and navigation.",
     "maxItems": 10,
     "filter": "all",
     "sortBy": "relevance",
