@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 import { usePosts } from "@/providers/PostProvider";
 import Image from "next/image";
 import { useState } from "react";
@@ -7,27 +8,15 @@ import { useDebouncedCallback } from "use-debounce";
 
 export default function Home() {
   const [search, setSearch] = useState("");
-  const { setPosts } = usePosts;
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch("localhost:5000/query", {
-        method: "POST",
-        body: JSON.stringify({
-          query_string: search,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      return response.text();
-    };
-    useDebouncedCallback(async () => {
+  const { setQueryString } = usePosts();
+  // console.log(posts);
+  useEffect(
+    useDebouncedCallback(() => {
       // fetch data
-      const data = await fetchData();
-      console.log(data);
-    }, 300);
-  }, [search]);
+      setQueryString(search);
+    }, 1000),
+    [search]
+  );
 
   return (
     <div className="h-screen flex justify-center items-center relative">
