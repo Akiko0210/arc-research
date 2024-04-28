@@ -6,7 +6,7 @@ import { usePosts } from "@/providers/PostProvider";
 
 const MatterJsComponent = () => {
   const canvasRef = useRef(null);
-  const { checkLists } = usePosts();
+  const { checkLists, setCheckLists } = usePosts();
   const [clickedPosition, setClickedPosition] = useState(null);
   const repulsionDistance = 100; // Adjust this value to control the repulsion force
   let mouseMovedDuringDrag = false;
@@ -33,15 +33,25 @@ const MatterJsComponent = () => {
           label: "Trash",
         };
         objects = checkLists.map((list, index) => {
+          if (!list.x || !list.y) {
+            const copy = [...checkLists];
+            copy[index].x = p.random(canvasWidth);
+            copy[index].y = p.random(canvasHeight);
+            list.x = p.random(canvasWidth);
+            list.y = p.random(canvasHeight);
+            setCheckLists(copy);
+            console.log(copy, "new copy");
+          }
           return {
-            x: p.random(canvasWidth),
-            y: p.random(canvasHeight),
+            x: list.x,
+            y: list.y,
             radius: 40,
             fillStyle: p.color(p.random(255), p.random(255), p.random(255)), // Random color for each circle
             label: list.title, // Text label for the circle
             index,
           };
         });
+
         // create objects (vertices)
         // for (let i = 0; i < 5; i++) {
         //   const object = {
@@ -146,6 +156,16 @@ const MatterJsComponent = () => {
         if (selectedObject) {
           selectedObject.x = p.mouseX + offset.x;
           selectedObject.y = p.mouseY + offset.y;
+          const index = checkLists.findIndex(
+            (list) => list.id === selectedObject.index
+          );
+          console.log(index, "indexeafsdfasdf", selectedObject, checkLists);
+
+          const copy = [...checkLists];
+          copy[index].x = selectedObject.x;
+          copy[index].y = selectedObject.y;
+          console.log(copy, "new copy");
+          setCheckLists(copy);
         }
       };
 

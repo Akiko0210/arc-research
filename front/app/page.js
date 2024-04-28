@@ -18,15 +18,19 @@ export default function Home() {
       // fetch data
       console.log(search);
       setQueryString(search);
-    }, 1000),
+    }, 2000),
     [search]
   );
 
   return (
     <div className="h-screen flex flex-col justify-center items-center relative">
-      <div className="text-9xl border-gradient-to-r from-[#d53e33] to-[#fbb300] ">
+      {/* <div className="text-9xl border-gradient-to-r from-[#d53e33] to-[#fbb300] ">
         Arc research
-      </div>
+      </div> */}
+      <div
+        style={{ backgroundImage: `url("/bg.webp")` }}
+        className="bg-cover bg-center blur-sm h-full w-full backdrop-blur-lg"
+      />
       {/* add box class if you need noen moving border */}
       <div className="absolute  bg-background backdrop-blur-lg">
         <input
@@ -73,7 +77,7 @@ export default function Home() {
                 router.push("/graph");
               }}
             >
-              submoot
+              submit
             </button>
           </div>
         )}

@@ -41,7 +41,7 @@ const PostProvider = ({ children }) => {
       const data = await response.json();
       console.log("my data:", data.response);
       setCheckLists(
-        data.response.map((list) => {
+        data.response.slice(0, 7).map((list) => {
           return { ...list, checked: false };
         })
       );
