@@ -12,6 +12,7 @@ import os
 from flask_cors import CORS
 from apify_client import ApifyClient
 import os.path
+import re
 from llama_index.core import (
     VectorStoreIndex,
     SimpleDirectoryReader,
@@ -86,19 +87,21 @@ def index():
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    # Start the conversation
+    print("here hellow wave")
+    print(request.json['user_input'])
+    # # Start the conversation
     convo = model.start_chat(
         history=[
             {
                 "role": "user",
                 "parts": [
-                    request.form['user_input']
+                    request.json['user_input']
                 ],
             },
             {
                 "role": "model",
                 "parts": [
-                    "Okay, I can help with that! I'll provide information and supporting points in a checkbox format. You can select the points that interest you, and I'll elaborate on them. Just ask your questions, and we'll explore the topics together."
+                    "Okay, I can help with that! I'll provide information and supporting points. You can select the points that interest you, and I'll elaborate on them with bullet points and only show the subject and description. Don't say anything other than bullet points. Just ask your questions, and we'll explore the topics together."
                 ],
             },
         ]
@@ -106,7 +109,7 @@ def chat():
 
     while True:
         # Get user input from the HTML form
-        user_input = request.form['user_input']
+        user_input = request.json['user_input']
         
         # Send user's input to the model
         convo.send_message(user_input)
@@ -154,7 +157,22 @@ def chat():
             return jsonify({"message": "Search completed. Check your results!"})
 
         # Return model's response
-        return jsonify({"response": response})
+        pattern = r'\*\*\s*(.*?)\s*:\*\*\s*(.*?)\n'
+
+        # Find all matches
+        matches = re.findall(pattern, response)
+
+        # Extract titles and descriptions
+        titles_descriptions = [{'title': match[0], 'description': match[1]} for match in matches]
+
+
+        # pattern = r'\*\*(.*?)\*\*'
+        print(titles_descriptions, "title descriptions")
+        # matches = re.findall(pattern, response)
+        # string_array_without_colon = [s.replace(':', '') for s in matches]
+
+
+        return jsonify({"response": titles_descriptions})
 
 def scrape_websites(links):
     # Create the data folder if it doesn't exist
@@ -162,6 +180,7 @@ def scrape_websites(links):
     if not os.path.exists(data_folder):
         os.makedirs(data_folder)
     os.chdir(data_folder)
+        
     
     # Initialize the WebDriver with the configured options
     driver = webdriver.Chrome(options=chrome_options)

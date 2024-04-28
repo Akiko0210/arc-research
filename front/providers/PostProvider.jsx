@@ -8,7 +8,12 @@ const PostContext = createContext();
 const PostProvider = ({ children }) => {
   const router = useRouter();
   const [queryString, setQueryString] = useState();
+  // not using this for now...
   const [posts, setPosts] = useState([]);
+  //
+
+  const [loader, setLoader] = useState(false);
+  const [checkLists, setCheckLists] = useState([]);
   const getPost = (id) => {
     return posts.find((post) => post.id === id);
   };
@@ -22,17 +27,24 @@ const PostProvider = ({ children }) => {
   };
   const fetchData = async (search) => {
     try {
-      const response = await fetch("http://localhost:5000/query", {
+      const response = await fetch("http://localhost:5000/chat", {
         method: "POST",
         body: JSON.stringify({
-          query_string: search,
+          user_input: search,
         }),
         headers: {
           "Content-Type": "application/json",
         },
       });
-      console.log(response);
-      return response;
+      const data = await response.json();
+      console.log("my data:", data.response);
+      setCheckLists(
+        data.response.map((list) => {
+          return { ...list, checked: false };
+        })
+      );
+      setLoader(false);
+      // return data.response;
 
       /*
       const myHeaders = new Headers();
@@ -55,19 +67,30 @@ const PostProvider = ({ children }) => {
         .catch((error) => console.error(error));
       */
     } catch (err) {
+      setLoader(false);
       console.log("Error", err);
     }
   };
 
   useEffect(() => {
-    // console.log(queryString);
-    const data = fetchData(queryString);
-    // console.log(data);
+    if (queryString !== "") {
+      setLoader(true);
+      fetchData(queryString);
+    }
   }, [queryString]);
 
   return (
     <PostContext.Provider
-      value={{ setPosts, posts, getPost, getNext, setQueryString }}
+      value={{
+        setPosts,
+        checkLists,
+        setCheckLists,
+        posts,
+        getPost,
+        getNext,
+        setQueryString,
+        loader,
+      }}
     >
       {children}
     </PostContext.Provider>

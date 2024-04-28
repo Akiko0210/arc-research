@@ -1,62 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Interface</title>
-</head>
-<body>
-    <h1>Chat Interface</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat Test</title>
+  </head>
+  <body>
+    <h1>Chat Test</h1>
     <div id="chat-container">
-        <!-- Chat messages will be displayed here -->
-    </div>
-    <form id="chat-form">
-        <input type="text" id="user-input" placeholder="Type your message...">
+      <div id="chat-messages"></div>
+      <form id="chat-form">
+        <input type="text" id="user-input" placeholder="Type your message..." />
         <button type="submit">Send</button>
-    </form>
+      </form>
+    </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('chat-form');
-            const userInput = document.getElementById('user-input');
-            const chatContainer = document.getElementById('chat-container');
-
-            form.addEventListener('submit', function(event) {
-                event.preventDefault();
-                const userMessage = userInput.value.trim();
-                if (userMessage === '') return;
-
-                // Display user message in the chat container
-                displayMessage('user', userMessage);
-                
-                // Send user message to the server
-                fetch('/chat', {
-                    method: 'POST',
-                    body: new URLSearchParams({
-                        user_input: userMessage
-                    }),
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    // Display server response in the chat container
-                    displayMessage('server', data.response);
-                })
-                .catch(error => console.error('Error:', error));
-
-                // Clear input field
-                userInput.value = '';
-            });
-
-            function displayMessage(sender, message) {
-                const messageElement = document.createElement('div');
-                messageElement.classList.add(sender);
-                messageElement.textContent = message;
-                chatContainer.appendChild(messageElement);
-            }
+      document
+        .getElementById("chat-form")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          sendMessage();
         });
+
+      function sendMessage() {
+        var userInput = document.getElementById("user-input").value.trim();
+
+        // Clear input field
+        document.getElementById("user-input").value = "";
+
+        // Display user message
+        appendMessage("You", userInput);
+
+        // Send user message to server
+        fetch("http://localhost:5000/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_input: userInput,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+            // Display model's response
+            appendMessage("Model", data.response);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+
+      function appendMessage(sender, message) {
+        var messageContainer = document.getElementById("chat-messages");
+        var messageElement = document.createElement("div");
+        messageElement.innerText = sender + ": " + message;
+        messageContainer.appendChild(messageElement);
+      }
     </script>
-</body>
+  </body>
 </html>

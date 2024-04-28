@@ -8,28 +8,63 @@ import { useDebouncedCallback } from "use-debounce";
 
 export default function Home() {
   const [search, setSearch] = useState("");
-  const { setQueryString } = usePosts();
+  const { setQueryString, checkLists, loader, setCheckLists } = usePosts();
+  // console.log(checkLists, "checklists");
   // console.log(posts);
   useEffect(
     useDebouncedCallback(() => {
       // fetch data
+      console.log(search);
       setQueryString(search);
     }, 1000),
     [search]
   );
 
   return (
-    <div className="h-screen flex justify-center items-center relative">
+    <div className="h-screen flex flex-col justify-center items-center relative">
       <div className="text-9xl border-gradient-to-r from-[#d53e33] to-[#fbb300] ">
         Arc research
       </div>
       {/* add box class if you need noen moving border */}
-      <input
-        onChange={(e) => setSearch(e.target.value)}
-        value={search}
-        className="box rounded p-4 w-[700px] bg-background backdrop-blur-lg absolute"
-        placeholder="Search..."
-      />
+      <div className="absolute  bg-background backdrop-blur-lg">
+        <input
+          onChange={(e) => setSearch(e.target.value)}
+          value={search}
+          className={`${
+            loader && "box"
+          } rounded p-4 w-[700px] bg-background backdrop-blur-lg`}
+          placeholder="Search..."
+        />
+        <div className="flex flex-col items-center p-4 w-[700px] bg-background backdrop-blur-lg">
+          {checkLists?.map(({ title, description, checked }, index) => {
+            return (
+              <div
+                className={`w-full ${
+                  checked && "bg-gradient-to-r from-cyan-500 to-blue-500"
+                } p-2`}
+                onClick={() => {
+                  const copy = [...checkLists];
+                  copy[index].checked = !copy[index].checked;
+                  console.log(copy[index].checked, "copy that is changing");
+
+                  setCheckLists(copy);
+                }}
+              >
+                <div className="text-md">{title}</div>
+                <div className="text-xs">{description}</div>
+              </div>
+            );
+          })}
+          {checkLists.length > 0 && (
+            <button
+              className="rounded p-2 bg-white text-black border-red"
+              onClick={() => console.log("hello world")}
+            >
+              submoot
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
