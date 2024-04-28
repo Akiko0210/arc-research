@@ -4,11 +4,13 @@ import { usePosts } from "@/providers/PostProvider";
 import Image from "next/image";
 import { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
+import { useRouter } from "next/navigation";
 // import "./page.scss";
 
 export default function Home() {
   const [search, setSearch] = useState("");
   const { setQueryString, checkLists, loader, setCheckLists } = usePosts();
+  const router = useRouter();
   // console.log(checkLists, "checklists");
   // console.log(posts);
   useEffect(
@@ -39,6 +41,7 @@ export default function Home() {
           {checkLists?.map(({ title, description, checked }, index) => {
             return (
               <div
+                key={index}
                 className={`w-full ${
                   checked && "bg-gradient-to-r from-cyan-500 to-blue-500"
                 } p-2`}
@@ -58,7 +61,7 @@ export default function Home() {
           {checkLists.length > 0 && (
             <button
               className="rounded p-2 bg-white text-black border-red"
-              onClick={() => console.log("hello world")}
+              onClick={() => router.push("/graph")}
             >
               submoot
             </button>

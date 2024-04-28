@@ -1,11 +1,10 @@
-'use client'
-import React, { useEffect, useRef } from "react";
+"use client";
+import React, { useEffect, useRef, useState } from "react";
 import p5 from "p5";
-import { motion } from 'framer-motion';
-import { ExpandingCircle } from '../test/components/Layout2';
 
 const MatterJsComponent = () => {
   const canvasRef = useRef(null);
+  const [clickedPosition, setClickedPosition] = useState(null);
   const repulsionDistance = 100; // Adjust this value to control the repulsion force
   let mouseMovedDuringDrag = false;
   let trashBin;
@@ -27,7 +26,8 @@ const MatterJsComponent = () => {
           x: canvasWidth - 100, // Adjust position as needed
           y: canvasHeight - 100, // Adjust position as needed
           width: 80,
-          height: 80
+          height: 80,
+          label: "Trash",
         };
 
         // create objects (vertices)
@@ -37,7 +37,7 @@ const MatterJsComponent = () => {
             y: p.random(canvasHeight),
             radius: 40,
             fillStyle: p.color(p.random(255), p.random(255), p.random(255)), // Random color for each circle
-            label: `Object ${i}` // Text label for the circle
+            label: `Object ${i}`, // Text label for the circle
           };
           objects.push(object);
         }
@@ -55,8 +55,8 @@ const MatterJsComponent = () => {
 
             if (distance < repulsionDistance) {
               const forceMagnitude = (repulsionDistance - distance) * 0.01; // Adjust this value to control the repulsion strength
-              const forceX = forceMagnitude * dx / distance;
-              const forceY = forceMagnitude * dy / distance;
+              const forceX = (forceMagnitude * dx) / distance;
+              const forceY = (forceMagnitude * dy) / distance;
 
               objects[i].x -= forceX;
               objects[i].y -= forceY;
@@ -82,6 +82,7 @@ const MatterJsComponent = () => {
         }
 
         // Display vertices (circles) with outline and solid dot
+        // let hovered = false;
         for (let i = 0; i < objects.length; i++) {
           const object = objects[i];
 
@@ -104,6 +105,10 @@ const MatterJsComponent = () => {
         }
 
         // Draw trash bin
+        p.fill(255);
+        p.textSize(12); // Set text size
+        p.textAlign(p.CENTER, p.BOTTOM); // Align text to center bottom
+        p.text(trashBin.label, trashBin.x + trashBin.width / 2, trashBin.y); // Adjust the vertical offset as needed
         p.fill(255, 0, 0); // Set fill color to red
         p.rect(trashBin.x, trashBin.y, trashBin.width, trashBin.height); // Draw trash bin rectangle
       };
@@ -115,7 +120,10 @@ const MatterJsComponent = () => {
           const d = p.dist(p.mouseX, p.mouseY, objects[i].x, objects[i].y);
           if (d < objects[i].radius) {
             selectedObject = objects[i];
-            offset = p.createVector(selectedObject.x - p.mouseX, selectedObject.y - p.mouseY);
+            offset = p.createVector(
+              selectedObject.x - p.mouseX,
+              selectedObject.y - p.mouseY
+            );
             break;
           }
         }
@@ -131,9 +139,10 @@ const MatterJsComponent = () => {
 
       p.mouseReleased = () => {
         if (selectedObject && offset && !mouseMovedDuringDrag) {
-          console.log("Clicked but not dragged on a circle:", objects.indexOf(selectedObject)); // Log the index of the clicked circle
-
-
+          console.log(
+            "Clicked but not dragged on a circle:",
+            objects.indexOf(selectedObject)
+          ); // Log the index of the clicked circle
         } else {
           // Check if dragged object is inside trash bin
           if (
@@ -162,7 +171,11 @@ const MatterJsComponent = () => {
     };
   }, []);
 
-  return <div ref={canvasRef}></div>;
+  return (
+    <div>
+      <div ref={canvasRef}></div>;
+    </div>
+  );
 };
 
 export default MatterJsComponent;

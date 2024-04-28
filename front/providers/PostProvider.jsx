@@ -27,7 +27,9 @@ const PostProvider = ({ children }) => {
   };
   const fetchData = async (search) => {
     try {
-      const response = await fetch("http://localhost:5000/chat", {
+      const url = process.env.NEXT_PUBLIC_API_URL + "/chat";
+      console.log(url, "url");
+      const response = await fetch(url, {
         method: "POST",
         body: JSON.stringify({
           user_input: search,
