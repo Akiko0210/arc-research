@@ -6,38 +6,43 @@ import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
-import { useRouter } from "next/router";
+import { usePathname, useRouter } from "next/navigation";
+import { usePosts } from "@/providers/PostProvider";
 
-const data = [
-  {
-    id: 1,
-    title: "First Title",
-    content: "First Content",
-  },
-  {
-    id: 2,
-    title: "Second Title",
-    content: "Second Content",
-  },
-  ,
-  {
-    id: 3,
-    title: "third Title",
-    content: "Second Content",
-  },
-  ,
-  {
-    id: 4,
-    title: "fourth Title",
-    content: "Second Content",
-  },
-  // Add more items as needed
-];
+// const data = [
+//   {
+//     id: 1,
+//     title: "First Title",
+//     description: "First description",
+//   },
+//   {
+//     id: 2,
+//     title: "Second Title",
+//     description: "Second description",
+//   },
+//   ,
+//   {
+//     id: 3,
+//     title: "third Title",
+//     description: "Second description",
+//   },
+//   ,
+//   {
+//     id: 4,
+//     title: "fourth Title",
+//     description: "Second description",
+//   },
+//   // Add more items as needed
+// ];
 
 const Page = () => {
-  // const router = useRouter();
-  const [activeId, setActiveId] = useState(1);
-  // const [activeIndex, setActiceIndex] = useState(0);
+  const pathname = usePathname();
+  const router = useRouter();
+  const paths = pathname.split("/");
+  const id = +paths[paths.length - 1];
+  const [activeId, setActiveId] = useState(id);
+  const { checkLists: data } = usePosts();
+  console.log(data);
 
   const handleNavigation = (direction) => {
     setActiveId((prevId) => {
@@ -112,7 +117,7 @@ const Page = () => {
                   {item.title}
                 </div>
                 <div className="rounded-xl p-4 bg-gray-800 bg-opacity-30 backdrop-blur-lg">
-                  {item.content}
+                  {item.description}
                 </div>
               </motion.div>
             ))}
@@ -120,6 +125,7 @@ const Page = () => {
           <button
             className="opacity-30 hover:opacity-100 absolute top-14 right-14 py-2 px-4 bg-gray-800 bg-opacity-30 backdrop-blur-lg border-2 text-white border-red-100 border-opacity-30 rounded-xl cursor-pointer hover:bg-red-500 hover:text-white transition-colors duration-300"
             aria-label="Complete and close"
+            onClick={() => router.back()}
           >
             Done
           </button>

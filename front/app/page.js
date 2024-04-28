@@ -63,7 +63,13 @@ export default function Home() {
               className="rounded p-2 bg-white text-black border-red"
               onClick={() => {
                 const copy = [...checkLists];
-                setCheckLists(copy.filter((list) => list.checked));
+                setCheckLists(
+                  copy
+                    .filter((list) => list.checked)
+                    .map((list, index) => {
+                      return { ...list, id: index };
+                    })
+                );
                 router.push("/graph");
               }}
             >
