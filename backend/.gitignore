@@ -1,0 +1,4 @@
+venv
+storage
+clean
+__pycache__

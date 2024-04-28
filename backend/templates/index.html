@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Query Form</title>
+</head>
+<body>
+    <h1>Query Form</h1>
+    <form id="queryForm">
+        <label for="query">Enter your query:</label><br>
+        <input type="text" id="query" name="query"><br><br>
+        <button type="submit">Submit</button>
+    </form>
+    <div id="response"></div>
+
+    <script>
+        document.getElementById('queryForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+    
+            fetch('/query', {
+                method: 'POST',
+                body: JSON.stringify({
+                    query_string: formData.get('query')
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.text()) // Parse response as text
+            .then(data => {
+                document.getElementById('response').textContent = data; // Set textContent instead of innerHTML
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+    
+</body>
+</html>
