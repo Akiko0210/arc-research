@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Interface</title>
+</head>
+<body>
+    <h1>Chat Interface</h1>
+    <div>
+        <label for="userInput">Your Message:</label><br>
+        <input type="text" id="userInput" name="userInput" size="50"><br><br>
+        <button type="button" onclick="sendMessage()">Send</button>
+    </div>
+    <div id="response"></div>
+
+    <script>
+        function sendMessage() {
+            var userInput = document.getElementById("userInput").value;
+            
+            // Create a JSON object with the user input
+            var requestData = { "user_input": userInput };
+
+            // Make a POST request to the /chat endpoint
+            fetch('/chat', {
+                method: 'POST',
+                body: JSON.stringify(requestData),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display the response from the server
+                document.getElementById("response").innerText = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>

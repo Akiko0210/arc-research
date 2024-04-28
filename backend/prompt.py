@@ -48,7 +48,6 @@ convo = model.start_chat(history=[
 # Initialize user input
 user_input = ""
 
-# Continue the conversation until the user decides to stop
 while user_input.lower() != "stop":
     # Prompt user for input
     user_input = input("You: ")
@@ -60,6 +59,17 @@ while user_input.lower() != "stop":
     response = convo.last.text
     print("Model:", response)  # Print model's response after user's input
 
-# Generate prompt from the accumulated information
-prompt = convo.last.text
-print("Generated Prompt:", prompt)
+if user_input.lower() == "stop":
+    # Generate prompt from the accumulated information
+    user_input = "generate a summarize in one shrot sentences of what have been discovered in this chat. in general just mentioned the important word. don't use description, and add the topic inside the result but only list it like other important words."
+
+
+    convo.send_message(user_input)
+    response = convo.last.text
+    print("Model:", response)  # Print model's response after user's input
+else:
+    print("No prompt generated as the conversation ended abruptly.")
+
+
+#how does insect vision works?
+#Compound Eyes, Simple Eyes, Polarized Light Detection, Image Formation and Processing

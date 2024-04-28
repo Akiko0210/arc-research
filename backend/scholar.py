@@ -5,7 +5,7 @@ client = ApifyClient("apify_api_5UDWZrnbBgtcZTiwwDG61jpTri9WTk45i1Zb")
 
 # Prepare the Actor input
 run_input = {
-    "keyword": "Explore the significance of ultraviolet vision for insects, including its role in foraging, communication, and navigation.",
+    "keyword": "Insect, vision, compound eyes, ommatidia, mosaic image, motion detection, simple eyes (ocelli), light detection, polarized light, navigation, image processing, behavior.  ",
     "maxItems": 10,
     "filter": "all",
     "sortBy": "relevance",
