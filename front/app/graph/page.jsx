@@ -1,9 +1,12 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import p5 from "p5";
+import ExpandingCircle from "@/components/ExpandingCircle";
+import { usePosts } from "@/providers/PostProvider";
 
 const MatterJsComponent = () => {
   const canvasRef = useRef(null);
+  const { checkLists } = usePosts();
   const [clickedPosition, setClickedPosition] = useState(null);
   const repulsionDistance = 100; // Adjust this value to control the repulsion force
   let mouseMovedDuringDrag = false;
@@ -29,18 +32,27 @@ const MatterJsComponent = () => {
           height: 80,
           label: "Trash",
         };
-
-        // create objects (vertices)
-        for (let i = 0; i < 5; i++) {
-          const object = {
+        objects = checkLists.map((list, index) => {
+          return {
             x: p.random(canvasWidth),
             y: p.random(canvasHeight),
             radius: 40,
             fillStyle: p.color(p.random(255), p.random(255), p.random(255)), // Random color for each circle
-            label: `Object ${i}`, // Text label for the circle
+            label: list.title, // Text label for the circle
+            index,
           };
-          objects.push(object);
-        }
+        });
+        // create objects (vertices)
+        // for (let i = 0; i < 5; i++) {
+        //   const object = {
+        //     x: p.random(canvasWidth),
+        //     y: p.random(canvasHeight),
+        //     radius: 40,
+        //     fillStyle: p.color(p.random(255), p.random(255), p.random(255)), // Random color for each circle
+        //     label: `Object ${i}`, // Text label for the circle
+        //   };
+        //   objects.push(object);
+        // }
       };
 
       p.draw = () => {
@@ -143,6 +155,11 @@ const MatterJsComponent = () => {
             "Clicked but not dragged on a circle:",
             objects.indexOf(selectedObject)
           ); // Log the index of the clicked circle
+          setClickedPosition({
+            x: selectedObject.x,
+            y: selectedObject.y,
+            index: selectedObject.index,
+          });
         } else {
           // Check if dragged object is inside trash bin
           if (
@@ -173,7 +190,15 @@ const MatterJsComponent = () => {
 
   return (
     <div>
+      {/* <div>{`${clickedPosition.x} + ${clickedPosition.y}`}</div> */}
       <div ref={canvasRef}></div>;
+      {clickedPosition && (
+        <ExpandingCircle
+          x={clickedPosition.x}
+          y={clickedPosition.y}
+          index={clickedPosition.index}
+        />
+      )}
     </div>
   );
 };

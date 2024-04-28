@@ -1,7 +1,15 @@
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 // import { useState } from "react";
 
-function ExpandingCircle({ x, y }) {
+function ExpandingCircle({ x, y, index }) {
+  const router = useRouter();
+  useEffect(() => {
+    setTimeout(() => {
+      router.push(`/posts/${index}`);
+    }, 1000);
+  }, []);
   return (
     <motion.div
       initial={{
@@ -26,7 +34,7 @@ function ExpandingCircle({ x, y }) {
         },
       }}
       transition={{
-        duration: 2,
+        duration: 1,
         ease: [0.6, 0.01, 0.4, 1],
       }}
       style={{

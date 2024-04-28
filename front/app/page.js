@@ -61,7 +61,11 @@ export default function Home() {
           {checkLists.length > 0 && (
             <button
               className="rounded p-2 bg-white text-black border-red"
-              onClick={() => router.push("/graph")}
+              onClick={() => {
+                const copy = [...checkLists];
+                setCheckLists(copy.filter((list) => list.checked));
+                router.push("/graph");
+              }}
             >
               submoot
             </button>
