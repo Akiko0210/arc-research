@@ -7,37 +7,56 @@
 </head>
 <body>
     <h1>Chat Interface</h1>
-    <div>
-        <label for="userInput">Your Message:</label><br>
-        <input type="text" id="userInput" name="userInput" size="50"><br><br>
-        <button type="button" onclick="sendMessage()">Send</button>
+    <div id="chat-container">
+        <!-- Chat messages will be displayed here -->
     </div>
-    <div id="response"></div>
+    <form id="chat-form">
+        <input type="text" id="user-input" placeholder="Type your message...">
+        <button type="submit">Send</button>
+    </form>
 
     <script>
-        function sendMessage() {
-            var userInput = document.getElementById("userInput").value;
-            
-            // Create a JSON object with the user input
-            var requestData = { "user_input": userInput };
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('chat-form');
+            const userInput = document.getElementById('user-input');
+            const chatContainer = document.getElementById('chat-container');
 
-            // Make a POST request to the /chat endpoint
-            fetch('/chat', {
-                method: 'POST',
-                body: JSON.stringify(requestData),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Display the response from the server
-                document.getElementById("response").innerText = JSON.stringify(data, null, 2);
-            })
-            .catch(error => {
-                console.error('Error:', error);
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const userMessage = userInput.value.trim();
+                if (userMessage === '') return;
+
+                // Display user message in the chat container
+                displayMessage('user', userMessage);
+                
+                // Send user message to the server
+                fetch('/chat', {
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        user_input: userMessage
+                    }),
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Display server response in the chat container
+                    displayMessage('server', data.response);
+                })
+                .catch(error => console.error('Error:', error));
+
+                // Clear input field
+                userInput.value = '';
             });
-        }
+
+            function displayMessage(sender, message) {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add(sender);
+                messageElement.textContent = message;
+                chatContainer.appendChild(messageElement);
+            }
+        });
     </script>
 </body>
 </html>
