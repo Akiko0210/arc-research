@@ -1,6 +1,7 @@
 apify_client==1.6.4
 beautifulsoup4==4.12.3
 Flask==2.3.2
+Flask_Cors==4.0.0
 huggingface_hub==0.20.3
 llama_index==0.10.32
 nltk==3.8.1

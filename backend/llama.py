@@ -13,6 +13,7 @@ from llama_index.core import (
 
 
 app = Flask(__name__)
+CORS(app)
 # Initialize the ApifyClient with your API token
 client = ApifyClient("apify_api_5UDWZrnbBgtcZTiwwDG61jpTri9WTk45i1Zb")
 
@@ -43,13 +44,22 @@ PERSIST_DIR = "./storage"
 if not os.path.exists(PERSIST_DIR):
     # load the documents and create the index
     documents = SimpleDirectoryReader("data").load_data()
-    index = VectorStoreIndex.from_documents(documents)
+    good = VectorStoreIndex.from_documents(documents)
     # store it for later
-    index.storage_context.persist(persist_dir=PERSIST_DIR)
+    good.storage_context.persist(persist_dir=PERSIST_DIR)
 else:
     # load the existing index
     storage_context = StorageContext.from_defaults(persist_dir=PERSIST_DIR)
-    index = load_index_from_storage(storage_context)
+    good = load_index_from_storage(storage_context)
+
+# Define a route for querying the index
+@app.route('/query', methods=['POST'])
+def query_index():
+    query_string = request.json['query_string']  # assuming the query string is sent in JSON format
+    query_engine = good.as_query_engine()
+    response = query_engine.query(query_string)
+    return str({'response': response})
+
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -110,22 +120,28 @@ def chat():
 
             # Call the Actor with the final response as the keyword
             run = client.actor("kdjLO0hegCjr5Ejqp").call(run_input=run_input)
-            
-            # Process the response from Apify
-            # Here you can handle the response and pass it to the HTML template
-            # For simplicity, let's just return a JSON response
+            links = []
+
+            # Fetch and append valid links from Actor results to the 'links' list
+            for item in client.dataset(run["defaultDatasetId"]).iterate_items():
+                # Extract documentLink
+                document_link = item.get("documentLink", "")
+                # Check if documentLink is not 'N/A'
+                if document_link and document_link != "N/A":
+                    links.append(document_link)
+
+            # Output the valid links to a file
+            with open('/data/links.txt', 'w') as f:
+                for link in links:
+                    f.write("%s\n" % link)
+
             return jsonify({"message": "Search completed. Check your results!"})
 
         # Return model's response
         return jsonify({"response": response})
+    
 
-# Define a route for querying the index
-@app.route('/query', methods=['POST'])
-def query_index():
-    query_string = request.json['query_string']  # assuming the query string is sent in JSON format
-    query_engine = index.as_query_engine()
-    response = query_engine.query(query_string)
-    return str({'response': response})
+
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -63,7 +63,6 @@ if user_input.lower() == "stop":
     # Generate prompt from the accumulated information
     user_input = "generate a summarize in one shrot sentences of what have been discovered in this chat. in general just mentioned the important word. don't use description, and add the topic inside the result but only list it like other important words."
 
-
     convo.send_message(user_input)
     response = convo.last.text
     print("Model:", response)  # Print model's response after user's input

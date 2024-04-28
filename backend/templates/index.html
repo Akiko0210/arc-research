@@ -19,7 +19,7 @@
             event.preventDefault();
             var formData = new FormData(this);
     
-            fetch('/query', {
+            fetch('http://127.0.0.1:5000/query', {
                 method: 'POST',
                 body: JSON.stringify({
                     query_string: formData.get('query')

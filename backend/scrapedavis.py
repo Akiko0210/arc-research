@@ -18,7 +18,7 @@ with open('links.txt', 'r') as f:
         h2_elements = driver.find_elements(By.TAG_NAME, 'h2')
         
         # Open a text file to write the extracted text
-        with open('extracted_text.txt', 'a', encoding='utf-8') as file:
+        with open('data/extracted_text.txt', 'a', encoding='utf-8') as file:
             p_count = 0  # Initialize count for <p> elements
             # Write the text from each <p> element to the file
             for p in p_elements:
