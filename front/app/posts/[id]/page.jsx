@@ -91,6 +91,13 @@ const Page = () => {
             </motion.div>
           ))}
           </div>
+          <button
+    className="opacity-30 hover:opacity-100 absolute top-14 right-14 py-2 px-4 bg-gray-800 bg-opacity-30 backdrop-blur-lg border-2 text-white border-red-100 border-opacity-30 rounded-xl cursor-pointer hover:bg-red-500 hover:text-white transition-colors duration-300"
+    aria-label="Complete and close"
+  >
+    Done
+  </button>
+
         </div>
       </motion.div>
     </Layout>
