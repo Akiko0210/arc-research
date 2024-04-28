@@ -37,28 +37,28 @@ export default function Home() {
           } rounded p-4 w-[700px] bg-background backdrop-blur-lg`}
           placeholder="Search..."
         />
-        <div className="flex flex-col items-center p-4 w-[700px] bg-background backdrop-blur-lg">
-          {checkLists?.map(({ title, description, checked }, index) => {
-            return (
-              <div
-                key={index}
-                className={`w-full ${
-                  checked && "bg-gradient-to-r from-cyan-500 to-blue-500"
-                } p-2`}
-                onClick={() => {
-                  const copy = [...checkLists];
-                  copy[index].checked = !copy[index].checked;
-                  console.log(copy[index].checked, "copy that is changing");
+        {checkLists.length > 0 && (
+          <div className="flex flex-col items-center p-4 w-[700px] bg-background backdrop-blur-lg">
+            {checkLists?.map(({ title, description, checked }, index) => {
+              return (
+                <div
+                  key={index}
+                  className={`w-full ${
+                    checked && "bg-gradient-to-r from-cyan-500 to-blue-500"
+                  } p-2`}
+                  onClick={() => {
+                    const copy = [...checkLists];
+                    copy[index].checked = !copy[index].checked;
+                    console.log(copy[index].checked, "copy that is changing");
 
-                  setCheckLists(copy);
-                }}
-              >
-                <div className="text-md">{title}</div>
-                <div className="text-xs">{description}</div>
-              </div>
-            );
-          })}
-          {checkLists.length > 0 && (
+                    setCheckLists(copy);
+                  }}
+                >
+                  <div className="text-md">{title}</div>
+                  <div className="text-xs">{description}</div>
+                </div>
+              );
+            })}
             <button
               className="rounded p-2 bg-white text-black border-red"
               onClick={() => {
@@ -75,8 +75,8 @@ export default function Home() {
             >
               submoot
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
