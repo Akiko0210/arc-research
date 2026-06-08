@@ -9,6 +9,8 @@ import time
 import shutil
 
 import os
+from dotenv import load_dotenv
+
 from flask_cors import CORS
 from apify_client import ApifyClient
 import os.path
@@ -22,10 +24,12 @@ from llama_index.core import (
 
 
 
+load_dotenv()
 app = Flask(__name__)
 CORS(app)
 # Initialize the ApifyClient with your API token
-client = ApifyClient("apify_api_5UDWZrnbBgtcZTiwwDG61jpTri9WTk45i1Zb")
+APIFY_API_KEY = os.getenv("APIFY_API_KEY")
+client = ApifyClient(APIFY_API_KEY)
 
 chrome_options = Options()
 chrome_options.add_argument("--headless")
@@ -33,7 +37,8 @@ chrome_options.add_argument("--headless")
 driver = webdriver.Chrome(options=chrome_options)
 
 # Configure GenerativeAI API
-genai.configure(api_key="AIzaSyD2Ivwpf_Dsboq7nQfSyh1seVMdDkVNWP4")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+genai.configure(api_key=GEMINI_API_KEY)
 
 # Set up the model
 generation_config = {
