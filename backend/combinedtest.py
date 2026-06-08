@@ -1,3 +1,8 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 import google.generativeai as genai
 from apify_client import ApifyClient
 
