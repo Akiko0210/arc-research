@@ -1,7 +1,14 @@
+
+import os
+from dotenv import load_dotenv
+
 from apify_client import ApifyClient
 
+load_dotenv()
+
 # Initialize the ApifyClient with your API token
-client = ApifyClient("apify_api_5UDWZrnbBgtcZTiwwDG61jpTri9WTk45i1Zb")
+APIFY_API_KEY = os.getenv("APIFY_API_KEY")
+client = ApifyClient(APIFY_API_KEY)
 
 # Prepare the Actor input
 run_input = {
