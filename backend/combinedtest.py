@@ -2,10 +2,12 @@ import google.generativeai as genai
 from apify_client import ApifyClient
 
 # Initialize the ApifyClient with your API token
-client = ApifyClient("apify_api_5UDWZrnbBgtcZTiwwDG61jpTri9WTk45i1Zb")
+APIFY_API_KEY = os.getenv("APIFY_API_KEY")
+client = ApifyClient(APIFY_API_KEY)
 
 # Configure GenerativeAI API
-genai.configure(api_key="AIzaSyD9FA8hc3p0AtaECPvjCxUdT6RCBMx8y4g")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+genai.configure(api_key=GEMINI_API_KEY)
 
 # Set up the model
 generation_config = {
